@@ -12,16 +12,19 @@ Discordチャンネル内のスレッドのタイトルと作成者でタスク�
 2. botをサーバーに招待（[招待方法](https://discordpy.readthedocs.io/ja/stable/discord.html#inviting-your-bot)）
 3. botの実行環境を用意（[インストール方法](https://discordpy.readthedocs.io/ja/stable/intro.html#installing)）
 
-### 招待時に与える権限（BOT PERMISSIONS）
+招待時はこれらの権限を与えよう（BOT PERMISSIONS）：
 - Send Messages
 - Manage Messages
 - Manage Threads
 - Read Message History
 
 ### 実行環境
-- Linux・macOSなどのPOSIX環境（Windowsでも作動する確認はしていない）
-- Python 3.8以上
-- discord.py 2.0.1以上
+- OS
+  - Linux・macOSなどのPOSIX環境（Windowsでも作動する確認はしていない）
+- Python
+  - 3.8以上
+- ライブラリ（PIP）
+  - discord.py 2.0.1以上
 
 ---
 
@@ -30,9 +33,6 @@ Discordチャンネル内のスレッドのタイトルと作成者でタスク�
 準備が整ったら、POSIX環境ではとりあえずこれで動くはず。
 
 ```sh
-# discord.pyをインストール
-python3 -m pip install -U discord.py
-
 # プロジェクトの保存先ディレクトリーに移動
 cd task-collector
 
