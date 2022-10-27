@@ -13,7 +13,7 @@ client = discord.Client(intents=constants.INTENTS)
 target_channel_name = os.getenv(constants.CHANNEL, constants.DEFAULT_TARGET_CHANNEL)
 """botが作動するチャンネル名"""
 
-oauth_token = os.getenv(constants.OAUTH_TOKEN)
+token = os.getenv(constants.TOKEN)
 """botの認証トークン"""
 
 
@@ -65,13 +65,13 @@ async def on_raw_message_delete(event: discord.RawMessageDeleteEvent):
 ##############
 
 def validate_environment():
-    if oauth_token is None:
-        raise MissingEnvError(constants.OAUTH_TOKEN)
+    if token is None:
+        raise MissingEnvError(constants.TOKEN)
 
 def main():
     try:
         validate_environment()
-        client.run(oauth_token, log_level=logging.INFO)
+        client.run(token, log_level=logging.INFO)
     except discord.LoginFailure:
         raise InvalidTokenError()
     except Exception as e:

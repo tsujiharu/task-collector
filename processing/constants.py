@@ -3,7 +3,7 @@ from discord import Intents
 # 起動関連 #
 ############
 CHANNEL = 'CHANNEL'
-OAUTH_TOKEN = 'OAUTH_TOKEN'
+TOKEN = 'TOKEN'
 
 
 ####################
