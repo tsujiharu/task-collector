@@ -2,8 +2,8 @@ from discord import Intents
 ############
 # 起動関連 #
 ############
-CHANNEL = 'CHANNEL'
-TOKEN = 'TOKEN'
+CHANNEL = 'TASK_COL_CHANNEL'
+TOKEN = 'TASK_COL_TOKEN'
 
 
 ####################

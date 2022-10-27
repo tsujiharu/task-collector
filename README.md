@@ -14,9 +14,9 @@ python3 -m pip install -U discord.py
 cd task-collector
 
 # botの認証トークンを入力
-export TOKEN="<bot-token>"
+export TASK_COL_TOKEN="<bot-token>"
 # 作動するチャンネルを指定。指定しない場合は #タスクリスト。
-export CHANNEL='タスクリスト'
+export TASK_COL_CHANNEL='タスクリスト'
 
 # 起動
 python3 ./task_collector.py
