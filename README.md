@@ -33,8 +33,8 @@ Discordチャンネル内のスレッドのタイトルと作成者でタスク�
 準備が整ったら、POSIX環境ではとりあえずこれで動くはず。
 
 ```sh
-# プロジェクトの保存先ディレクトリーに移動
-cd task-collector
+# ソースコードの保存先ディレクトリーに移動
+cd task-collector/src
 
 # 認証トークンを入力
 export TASK_COL_TOKEN="<bot-token>"
