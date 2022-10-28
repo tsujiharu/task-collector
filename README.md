@@ -66,7 +66,7 @@ python3 ./task_collector.py
 環境によっては、上記のスクリプトの日本語コメントに対応できない場合がある。コピーする時はコメント抜きが無難だろう。
 
 
-### Dockerを用いた場合
+### Dockerを用いる場合
 
 ```sh
 docker run --detach \
