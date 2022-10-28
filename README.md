@@ -61,6 +61,8 @@ python3 ./task_collector.py
 
 `task-collector`はプロジェクトの保存先に置き換えよう。 
 
+作動するチャンネルは、botのロールに必ずメッセージを送る権限を与えよう。
+
 `<bot-token>`の取得方法は[これ](https://discordpy.readthedocs.io/ja/stable/discord.html)を参考にしよう。
 
 環境によっては、上記のスクリプトの日本語コメントに対応できない場合がある。コピーする時はコメント抜きが無難だろう。
