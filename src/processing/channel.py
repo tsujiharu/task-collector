@@ -1,3 +1,4 @@
+from typing import Optional
 from discord import Client, TextChannel, Message, NotFound
 from messages import info
 
@@ -25,7 +26,7 @@ async def build_message(channel: TextChannel) -> str:
 
     return '\n'.join(message_pieces)
 
-async def find_last_message(channel: TextChannel, user_id: (int | None) = None) -> (Message | None):
+async def find_last_message(channel: TextChannel, user_id: Optional[int] = None) -> Optional[Message]:
     """
     最大30件のメッセージを遡って、`channel`で最後に送られたメッセージを返す。
     `user_id`を指定した場合は、そのユーザーが最後に送ったメッセージを探して返す。
