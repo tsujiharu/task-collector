@@ -1,6 +1,7 @@
 from typing import Optional
 from discord import Client, TextChannel, Message, NotFound
 from messages import info
+from messages.error import SendForbiddenError
 
 async def build_message(channel: TextChannel) -> str:
     """
@@ -52,5 +53,9 @@ async def update_last_message(client: Client, channel: TextChannel):
     if last_message is not None:
         await last_message.delete()
 
-    await channel.send(content=message)
+    try:
+        await channel.send(content=message)
+    except Forbidden:
+        raise SendForbiddenError()
+    
     info.print_message_sent(channel.name)

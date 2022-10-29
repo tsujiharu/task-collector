@@ -1,4 +1,5 @@
 import os
+from discord import TextChannel
 
 class MissingEnvError(Exception):
     def __init__(self, key: str):
@@ -21,3 +22,10 @@ class MissingEnvError(Exception):
 class InvalidTokenError(Exception):
     def __str__(self) -> str:
         return 'ログインできなかったぞー。トークン合ってるかー'
+
+class SendForbiddenError(Exception):
+    def __init__(self, channel: TextChannel):
+        self.channel_name = channel.name
+
+    def __str__(self) -> str:
+        return f'#{self.channel_name} にリストを送ろうとしたら弾かれたぞー。チャンネルのアクセス権限設定間違ってないかー'
