@@ -1,8 +1,35 @@
+import asyncio
 from processing import constants
+from processing.comparison import Comparison
 from typing import Optional, Union
 from discord import Client, TextChannel, Thread, Message, NotFound, Forbidden
 from messages import info
 from messages.error import SendForbiddenError
+
+_unarchive_update_locks = {}
+
+async def unarchive_all_archived_threads(channel: TextChannel) -> bool:
+    """
+    `channel`の中の、`$end`で終わっていないスレッドをすべて復活させる。
+    """
+    lock = _unarchive_update_locks.get(channel.id)
+    if lock is None:
+        lock = asyncio.Lock()
+        _unarchive_update_locks[channel.id] = lock
+
+    await lock.acquire()
+
+    async for thread in channel.archived_threads(limit=None):
+        last_message = None
+        async for message in thread.history(limit=1):
+            last_message = message
+
+        if last_message is not None:
+            ended = last_message.content.__contains__(constants.MARKER_PREFIX + constants.COMMAND_END)
+            if not ended:
+                await thread.edit(archived=False)
+
+    lock.release()
 
 async def build_message(channel: TextChannel) -> str:
     """
@@ -28,7 +55,12 @@ async def build_message(channel: TextChannel) -> str:
 
     return '\n'.join(message_pieces)
 
-async def find_last_message(channel: Union[TextChannel, Thread], user_id: Optional[int] = None) -> Optional[Message]:
+async def find_last_message(
+    channel: Union[TextChannel, Thread],
+    user_id: Optional[int] = None,
+    content: Optional[str] = None,
+    content_comparison: Optional[Comparison] = None
+) -> Optional[Message]:
     """
     `channel`で最後に送られたメッセージを返す。
     `user_id`を指定した場合は、そのユーザーが最後に送ったメッセージを探して返す。
@@ -36,20 +68,20 @@ async def find_last_message(channel: Union[TextChannel, Thread], user_id: Option
     """
     last_message = None
     earliest_created_at = None
-    limit_hit = False
-    while last_message is None and not limit_hit:
+    exhausted = False
+    while last_message is None and not exhausted:
         iter = channel.history(limit=constants.HISTORY_FETCH_SIZE, before=earliest_created_at)
         messages = [m async for m in iter]
-        counter = 0
         for m in messages:
-            counter = counter + 1
             if earliest_created_at is None or m.created_at < earliest_created_at:
                 earliest_created_at = m.created_at
             if user_id is not None and m.author.id != user_id:
                 continue
+            if content is not None and not content_comparison.compare(m.content, content):
+                continue
             if last_message is None or m.created_at > last_message.created_at:
                 last_message = m
-        limit_hit = (counter < constants.HISTORY_FETCH_SIZE)
+        exhausted = (messages.__len__() < constants.HISTORY_FETCH_SIZE)
 
     return last_message
 
@@ -58,13 +90,18 @@ async def update_last_message(client: Client, channel: TextChannel):
     まとめリストを`channel`に送る。
     このbotが`channel`で既存のメッセージがあった場合は削除する。
     """
+    await unarchive_all_archived_threads(channel)
+
     message = await build_message(channel)
     info.print_message_built(channel.name)
 
     last_message = await find_last_message(channel, user_id=client.user.id)
 
     if last_message is not None:
-        await last_message.delete()
+        if last_message.content != message:
+            await last_message.delete()
+        else:
+            return
 
     try:
         await channel.send(content=message)

@@ -19,6 +19,11 @@ def get_intents() -> Intents:
 INTENTS = get_intents()
 HISTORY_FETCH_SIZE = 20
 
+################
+# コマンド関連 #
+################
+MARKER_PREFIX = '$'
+COMMAND_END = 'end'
 
 ################
 # デフォルト値 #

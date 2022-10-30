@@ -1,11 +1,16 @@
 import logging
 
 def logger():
+    """discord.py内蔵のロガーを返す。"""
     return logging.getLogger('discord')
 
 def print_user_login(username: str):
     """ログイン成功を記録"""
     logger().info(f'{username}としてログインしてやったぞー')
+
+def print_command_tree_synced():
+    """アプリコマンドをdiscordサーバーに同期したことを記録"""
+    logger().info('使えるコマンドを鯖に知らせといたからなー')
 
 def print_target_channel(target_channel: str):
     """指定チャンネルを記録"""

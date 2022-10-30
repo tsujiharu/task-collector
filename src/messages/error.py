@@ -29,3 +29,7 @@ class SendForbiddenError(Exception):
 
     def __str__(self) -> str:
         return f'#{self.channel_name} にリストを送ろうとしたら弾かれたぞー。チャンネルのアクセス権限設定間違ってないかー'
+
+class ThreadEndMisuseError(Exception):
+    def __str__(self) -> str:
+        return '`/$end`はスレッドで使ってくれ……。'

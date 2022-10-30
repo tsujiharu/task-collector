@@ -1,1 +1,1 @@
-__all__ = ["channel", "constants"]
+__all__ = ["channel", "constants", "comparison"]
