@@ -17,6 +17,7 @@ def get_intents() -> Intents:
     return intents
 
 INTENTS = get_intents()
+HISTORY_FETCH_SIZE = 20
 
 
 ################

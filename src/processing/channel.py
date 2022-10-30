@@ -1,5 +1,6 @@
-from typing import Optional
-from discord import Client, TextChannel, Message, NotFound
+from processing import constants
+from typing import Optional, Union
+from discord import Client, TextChannel, Thread, Message, NotFound, Forbidden
 from messages import info
 from messages.error import SendForbiddenError
 
@@ -27,17 +28,29 @@ async def build_message(channel: TextChannel) -> str:
 
     return '\n'.join(message_pieces)
 
-async def find_last_message(channel: TextChannel, user_id: Optional[int] = None) -> Optional[Message]:
+async def find_last_message(channel: Union[TextChannel, Thread], user_id: Optional[int] = None) -> Optional[Message]:
     """
-    最大30件のメッセージを遡って、`channel`で最後に送られたメッセージを返す。
+    `channel`で最後に送られたメッセージを返す。
     `user_id`を指定した場合は、そのユーザーが最後に送ったメッセージを探して返す。
     見つからなかった場合は`None`を返す。
     """
     last_message = None
-    async for m in channel.history(limit=30, oldest_first=False):
-        if user_id is None or m.author.id == user_id:
+    earliest_created_at = None
+    limit_hit = False
+    while last_message is None and not limit_hit:
+        iter = channel.history(limit=constants.HISTORY_FETCH_SIZE, before=earliest_created_at)
+        messages = [m async for m in iter]
+        counter = 0
+        for m in messages:
+            counter = counter + 1
+            if earliest_created_at is None or m.created_at < earliest_created_at:
+                earliest_created_at = m.created_at
+            if user_id is not None and m.author.id != user_id:
+                continue
             if last_message is None or m.created_at > last_message.created_at:
                 last_message = m
+        limit_hit = (counter < constants.HISTORY_FETCH_SIZE)
+
     return last_message
 
 async def update_last_message(client: Client, channel: TextChannel):
