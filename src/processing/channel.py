@@ -51,7 +51,7 @@ async def build_message(channel: TextChannel) -> str:
             proposer = starter_message.author
             message_pieces.append(f'- {title} ({proposer.display_name})')
         except NotFound:
-            message_pieces.append(f'- {title}')
+            pass
 
     return '\n'.join(message_pieces)
 
