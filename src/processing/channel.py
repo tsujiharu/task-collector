@@ -55,35 +55,27 @@ async def build_message(channel: TextChannel) -> str:
 
     return '\n'.join(message_pieces)
 
-async def find_last_message(
+async def delete_latest_messages(
     channel: Union[TextChannel, Thread],
-    user_id: Optional[int] = None,
-    content: Optional[str] = None,
-    content_comparison: Optional[Comparison] = None
-) -> Optional[Message]:
+    user_id: int
+):
     """
-    `channel`で最後に送られたメッセージを返す。
-    `user_id`を指定した場合は、そのユーザーが最後に送ったメッセージを探して返す。
-    見つからなかった場合は`None`を返す。
+    `channel`で最後に送られたメッセージを削除する。
+    `user_id`を指定した場合は、そのユーザーが最後に送ったメッセージを探して削除する。
+    見つからなかった場合は`None`を削除する。
     """
-    last_message = None
     earliest_created_at = None
     exhausted = False
-    while last_message is None and not exhausted:
+    while not exhausted:
         iter = channel.history(limit=constants.HISTORY_FETCH_SIZE, before=earliest_created_at)
         messages = [m async for m in iter]
         for m in messages:
             if earliest_created_at is None or m.created_at < earliest_created_at:
                 earliest_created_at = m.created_at
-            if user_id is not None and m.author.id != user_id:
+            if m.author.id != user_id:
                 continue
-            if content is not None and not content_comparison.compare(m.content, content):
-                continue
-            if last_message is None or m.created_at > last_message.created_at:
-                last_message = m
+            await m.delete()
         exhausted = (messages.__len__() < constants.HISTORY_FETCH_SIZE)
-
-    return last_message
 
 async def update_last_message(client: Client, channel: TextChannel):
     """
@@ -95,13 +87,7 @@ async def update_last_message(client: Client, channel: TextChannel):
     message = await build_message(channel)
     info.print_message_built(channel.name)
 
-    last_message = await find_last_message(channel, user_id=client.user.id)
-
-    if last_message is not None:
-        if last_message.content != message:
-            await last_message.delete()
-        else:
-            return
+    await delete_latest_messages(channel, client.user.id)
 
     try:
         await channel.send(content=message)
